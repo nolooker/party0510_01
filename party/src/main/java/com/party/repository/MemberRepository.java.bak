@@ -1,0 +1,32 @@
+package com.party.repository;
+
+import com.party.constant.Role;
+import com.party.dto.MemberDto;
+import com.party.entity.Member;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+
+public interface MemberRepository extends JpaRepository<Member, String> {
+    // 이메일을 이용하여 회원 정보 조회
+    Member findByEmail(String email);
+
+    Member findById(Long id);
+
+    @Query(" select new com.party.dto.MemberDto(id, name, email, address, phone, category, role) FROM Member WHERE email = :email")
+    MemberDto getMemberInfo(@Param("email") String email);
+
+    @Query("select new com.party.dto.MemberDto(id, name, email, address, phone, category, role) from Member where category = :category")
+    List<MemberDto> findByCategoryEquals(@Param("category") String category);
+
+    @Modifying
+    @Query("update Member m set m.role = :role where m.id = :id")
+    void updateMemberRole(@Param("id") Long id, @Param("role") Role role);
+
+
+
+
+}
